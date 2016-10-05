@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1">
+  <title>GET - API</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+
+<body>
+  <div id="data"></div>
+  <script>
+  var apiURL = 'http://beta.trimet.org/api/search/';
+  $.ajax({
+    type: 'GET',
+    url: apiURL,
+    cache: false,
+    dataType: 'jsonp',
+    jsonp: "callback",
+    success: function(json) {
+      $.each(json, function( index, value ) {
+        console.log(value);
+        $('#data').append('<p>' + JSON.stringify(value) + '</p>');
+      });
+    },
+    error: function() {
+    }
+  });
+  </script>
+</body>
+
+</html>

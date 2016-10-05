@@ -1,8 +1,9 @@
 <?php
 
-$dsn = '';
+$dsn = 'sqlite://./db/test.sqlite';
 $clients = [];
-
+//These Table Fields are unchangeable by the user.
+$removeFields = ['date-created', 'last-updated', 'id'];
 /**
 * The MIT License
 * http://creativecommons.org/licenses/MIT/
@@ -217,6 +218,15 @@ ArrestDB::Serve('POST', '/(#any)', function ($table)
 				$data[sprintf('"%s"', $key)] = $value;
 			}
 
+			foreach ($GLOBALS['removeFields'] as $key => $value)
+			{
+				unset($data['"' . $value . '"']);
+			}
+
+			$time = time();
+			$data['"date-created"'] = $time;
+			$data['"last-updated"'] = $time;
+
 			$query = array
 			(
 				sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))),
@@ -277,10 +287,19 @@ ArrestDB::Serve('PUT', '/(#any)/(#num)', function ($table, $id)
 	{
 		$data = [];
 
+		$time = time();
+		$GLOBALS['_PUT']['last-updated'] = $time;
+
+		foreach ($GLOBALS['removeFields'] as $key => $value)
+		{
+			unset($GLOBALS['_PUT'][$value]);
+		}
+
 		foreach ($GLOBALS['_PUT'] as $key => $value)
 		{
 			$data[$key] = sprintf('"%s" = ?', $key);
 		}
+
 
 		$query = array
 		(
@@ -528,6 +547,7 @@ class ArrestDB
 			$bitmask |= (defined('JSON_' . $option) === true) ? constant('JSON_' . $option) : 0;
 		}
 
+
 		if (($result = json_encode($data, $bitmask)) !== false)
 		{
 			$callback = null;
@@ -564,7 +584,8 @@ class ArrestDB
 		{
 			if (is_null($root) === true)
 			{
-				$root = preg_replace('~/++~', '/', substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])) . '/');
+				// $root = preg_replace('~/++~', '/', substr($_SERVER['PHP_SELF'], strlen($_SERVER['SCRIPT_NAME'])) . '/');
+				$root = preg_replace('~/++~', '/', substr($_SERVER['REQUEST_URI'], 4) . '/');
 			}
 
 			if (preg_match('~^' . str_replace(['#any', '#num'], ['[^/]++', '[0-9]++'], $route) . '~i', $root, $parts) > 0)
