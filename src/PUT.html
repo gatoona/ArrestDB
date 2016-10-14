@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1">
+  <title>PUT - API</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+
+<body>
+  <form id="apiPOST">
+    New Message:<br>
+    <input type="text" name="phrase">
+    <br>
+    <input type="submit" value="Submit">
+  </form> 
+
+  <div id="data"></div>
+  <script>
+  var apiURL = 'http://beta.trimet.org/api/echo-search/1';
+
+  $( "#apiPOST" ).submit(function( event ) {
+    event.preventDefault();
+
+    var formData = {
+          'search_term' : $('input[name=phrase]').val()
+    };
+
+    $.ajax({
+      type: "PUT",
+      url: apiURL,
+      crossDomain: true,
+      data: formData,
+      success: function(json) {
+        console.log(json);
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        console.log(textStatus);
+        alert("Sorry, we can't submit your information at this time.")
+      }
+    });
+    
+  });
+  </script>
+</body>
+
+</html>
