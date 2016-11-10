@@ -288,12 +288,13 @@ ArrestDB::Serve('PUT', '/(#any)/(#num)', function ($table, $id)
 		$data = [];
 
 		$time = time();
-		$GLOBALS['_PUT']['last-updated'] = $time;
 
 		foreach ($GLOBALS['removeFields'] as $key => $value)
 		{
 			unset($GLOBALS['_PUT'][$value]);
 		}
+		
+		$GLOBALS['_PUT']['last-updated'] = $time;
 
 		foreach ($GLOBALS['_PUT'] as $key => $value)
 		{
